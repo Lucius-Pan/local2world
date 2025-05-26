@@ -79,7 +79,7 @@ if lsof -iTCP:$PORT -sTCP:LISTEN -t >/dev/null ; then
 fi
 
 # 启动 serve（后台）
-npx serve "$DIST_DIR" -l $PORT > /tmp/serve_log.txt 2>&1 &
+npx serve "$DIST_DIR" -l $PORT > /tmp/serve.log 2>&1 &
 echo $! > /tmp/serve.pid   # ✅ 记录 serve 的 PID
 
 
@@ -90,11 +90,11 @@ SERVE_PID=$!
 sleep 2
 
 # 临时保存 cloudflared 日志
-TMP_LOG="/tmp/cloudflared_log.txt"
+TMP_LOG="/tmp/cloudflared.log"
 rm -f "$TMP_LOG"
 
 # 启动 cloudflared（后台）
-cloudflared tunnel --url http://localhost:$PORT > /tmp/cloudflared_log.txt 2>&1 &
+cloudflared tunnel --url http://127.0.0.1:$PORT --protocol http2 > /tmp/cloudflared.log 2>&1 &
 echo $! > /tmp/cloudflared.pid   # ✅ 记录 cloudflared 的 PID
 
 # 保存 cloudflared 的进程 ID
